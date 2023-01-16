@@ -22,16 +22,17 @@
 <!--                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />-->
 <!--                </svg>-->
 <!--            </label>-->
-<!--            <input class="toggle-all" id="toggle-all" type="checkbox" value="">-->
+<!--            <input data-bind="checked: checkAll" class="toggle-all" id="toggle-all" type="checkbox" value="">-->
 <!--        </div>-->
         <div class="toggle-wrap">
             <input class="toggle-all" type="checkbox" data-bind="checked: checkAll">
         </div>
-        <ul class="todo-list" data-bind="foreach: { data: items, as: 'item' }">
-            <li class="view">
+        <ul class="todo-list" data-bind="foreach: items">
+            <li class="view" data-bind="hidden: ($parent.todoState() == 1 && state() == true) || ($parent.todoState() == 2 && state() == false)">
                 <input class="toggle" type="checkbox" data-bind="checked: state || $parent.checkAll()">
-                <input class="edit active" data-bind="value: name, style: { 'text-decoration': state() ? 'line-through' : 'unset', event : { dblclick: editTodoItem() }}" disabled>
-<!--                <span data-bind = 'text: state'></span>-->
+                <div class="input-edit-wrap" data-bind="event: { dblclick: function(data, event){ $parent.editItemInput(data, event) } }">
+                    <input class="edit active" data-bind="value: name, style: { 'text-decoration': state() ? 'line-through' : 'unset'}, event: { blur: $parent.disableEditInput, keyup: $parent.onEnter }, disable: inputDisable">
+                </div>
                 <button data-bind="click: $parent.removeItem" class="destroy"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -39,23 +40,23 @@
             </li>
         </ul>
     </section>
-    <footer class="footer none">
+    <footer class="footer none" data-bind="visible: items().length">
         <span class="todo-count">
-            <span class="total-todo-active">0</span>
+            <span class="total-todo-active" data-bind="text: totalItemsActive()"></span>
             <span>items</span>
             <span>left</span>
         </span>
         <ul class="filters">
-            <li class="active all selected">All</li>
-            <li class="selected to-do-active"><span class="">Active</span></li>
-            <li class="selected to-do-completed">Completed</li>
+            <li class="all selected" data-bind="click: allState, css: { 'active': todoState() == 0 }">All</li>
+            <li class="selected to-do-active" data-bind="click: activeState, css: { 'active': todoState() == 1 }"><span class="">Active</span></li>
+            <li class="selected to-do-completed" data-bind="click: completedState, css: { 'active': todoState() == 2 }">Completed</li>
         </ul>
         <div class="clear-completed-wraper">
-            <span class="clear-completed">Clear completed</span>
+            <span class="clear-completed" data-bind="click: clearItemCompleted(), hidden: totalItemsCompleted() == 0">Clear completed</span>
         </div>
     </footer>
 </div>
-<script src="js/knockout.js"></script>
-<script src="js/main.js"></script>
+<script src="./js/knockout.js"></script>
+<script src="./js/main.js"></script>
 </body>
 </html>
