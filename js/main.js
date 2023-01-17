@@ -1,17 +1,28 @@
-function ToDoItem(name, state, inputDisable) {
-    var self = this;
-    self.name = ko.observable(name);
-    self.state = ko.observable(false);
-    self.inputDisable = ko.observable(true);
-}
+// var viewModel; viewModel = JSON.parse(localStorage.getItem("vM"));
+//
+// if(viewModel !== undefined || viewModel !== null) {
+//     viewModel = new vM();
+//     ko.applyBindings(viewModel);
+// }
+// ko.mapping.fromJS(JSON.parse(localStorage.getItem("vM")), self);
+// console.log(JSON.parse(localStorage.getItem("vM")))
+// view = ko.mapping.fromJS(localStorage.getItem("vM"));
+// console.log(localStorage.getItem("vM"))
+// ko.applyBindings(view);
 
 var ViewModel = function() {
     var self = this;
     var todoItems = [
-        new ToDoItem("Exercise one hour", false, true),
-        new ToDoItem("Supermarket", false, false)
+        // new ToDoItem("Exercise one hour", false, true),
+        // new ToDoItem("Supermarket", false, false)
     ];
 
+    function ToDoItem(name, state, inputDisable) {
+        var self = this;
+        self.name = ko.observable(name);
+        self.state = ko.observable(false);
+        self.inputDisable = ko.observable(true);
+    }
 
     self.checkAll = ko.observable(false);
     self.items = ko.observableArray(todoItems);
@@ -19,10 +30,17 @@ var ViewModel = function() {
     self.todoState = ko.observable(0);
     self.totalItemsActive = 0;
 
+    // ko.mapping.fromJS(localStorage.getItem('todolist'), self.items());
+
     self.addItem = function(data, event) {
         if (event.keyCode === 13 && self.itemToAdd() !== "") {
             self.items.push(new ToDoItem(self.itemToAdd()));
             self.itemToAdd("");
+            var unmapped = ko.mapping.toJS(self);
+            sessionStorage.setItem("vM", unmapped);
+            // localStorage.setItem('todolist', self.items());
+            console.log(unmapped)
+            console.log(sessionStorage.getItem("vM"));
         }
     };
 
@@ -32,7 +50,7 @@ var ViewModel = function() {
     };
 
     self.checkAll.subscribe(function(value){
-        if(self.todoState() === 0 || self.todoState() === 1){
+        if(self.todoState() === 0){
             if (value){
                 ko.utils.arrayFirst(self.items(), function (item) {
                     item.state(true);
@@ -44,15 +62,43 @@ var ViewModel = function() {
             }
         }
 
+        if(self.todoState() === 1){
+            if (self.totalItemsCompleted() === self.items().length){
+                if (value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                } else {
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(false);
+                    });
+                }
+            }else{
+                if(value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                }
+            }
+        }
+
         if(self.todoState() === 2){
-            if (value){
-                ko.utils.arrayFirst(self.items(), function (item) {
-                    item.state(true);
-                });
-            } else {
-                ko.utils.arrayFirst(self.items(), function (item) {
-                    item.state(false);
-                });
+            if (self.totalItemsCompleted() === self.items().length){
+                if (value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                } else {
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(false);
+                    });
+                }
+            }else{
+                if(value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                }
             }
         }
     }, self);
@@ -81,6 +127,9 @@ var ViewModel = function() {
         self.items.remove(function(item) {
             return item.state() === true
         });
+        if(!self.items().length){
+            self.checkAll(false);
+        }
     }
 
     self.onEnter = function(data, event){
@@ -114,20 +163,40 @@ var ViewModel = function() {
 
     self.activeState = function(){
         self.todoState(1);
+        self.checkAll(false);
     }
 
     self.completedState = function(){
         self.todoState(2);
-        // if(self.totalItemsCompleted() !== self.items().length){
-        //     self.checkAll(false);
-        // }
+        if(self.totalItemsCompleted() !== self.items().length){
+            self.checkAll(false);
+        }
     }
 
     self.allState = function(){
         self.todoState(0);
         // self.checkAll(false);
     }
+
+    var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
+    console.log();
+    // self.persistedArray = ko.observableArray().extend({ persist: 'todolist'});
 };
 
+
+// ko.mapping.fromJS(JSON.parse(localStorage.getItem("vM")), new ViewModel);
+// console.log(JSON.parse(localStorage.getItem("vM")))
+//
+console.log(new ViewModel())
+// ko.mapping.fromJS(localStorage.getItem("vM"), self);
+ko.mapping.fromJS(localStorage.getItem("vM"), null, ViewModel);
 ko.applyBindings(new ViewModel());
 
+// var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
+// console.log(viewModel)
+
+
+// ko.mapping.fromJS(data, viewModel);
+// var unmapped = ko.mapping.toJS(ViewModel);
+// localStorage.setItem('todolist', unmapped);
+// ko.mapping.fromJS(localStorage.getItem('todolist'), ViewModel);

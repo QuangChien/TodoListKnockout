@@ -165,14 +165,14 @@ body {
 .toggle-all {
     height: 20px;
     width: 20px;
-    /*opacity: 0;*/
+    opacity: 0;
 }
 
 .toggle-all-label{
     cursor: pointer;
 }
 
-.toggle-wrap svg{
+.toggle-all-label svg{
     stroke-width: 4;
     opacity: 0.3;
 }
@@ -194,6 +194,10 @@ body {
     background: none;
     margin-top: 13px;
     display: none;
+}
+
+.opacity-1{
+    opacity: 1!important;
 }
 
 .destroy svg{
