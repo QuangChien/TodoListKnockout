@@ -10,6 +10,9 @@
 // console.log(localStorage.getItem("vM"))
 // ko.applyBindings(view);
 
+// var viewModel = ko.mapping.fromJS(localStorage.getItem("todolist"));
+
+
 var ViewModel = function() {
     var self = this;
     var todoItems = [
@@ -30,17 +33,15 @@ var ViewModel = function() {
     self.todoState = ko.observable(0);
     self.totalItemsActive = 0;
 
-    // ko.mapping.fromJS(localStorage.getItem('todolist'), self.items());
-
     self.addItem = function(data, event) {
         if (event.keyCode === 13 && self.itemToAdd() !== "") {
             self.items.push(new ToDoItem(self.itemToAdd()));
             self.itemToAdd("");
             var unmapped = ko.mapping.toJS(self);
-            sessionStorage.setItem("vM", unmapped);
+            localStorage.setItem("todolist", JSON.stringify(unmapped));
             // localStorage.setItem('todolist', self.items());
             console.log(unmapped)
-            console.log(sessionStorage.getItem("vM"));
+            // console.log(sessionStorage.getItem("vM"));
         }
     };
 
@@ -51,14 +52,22 @@ var ViewModel = function() {
 
     self.checkAll.subscribe(function(value){
         if(self.todoState() === 0){
-            if (value){
-                ko.utils.arrayFirst(self.items(), function (item) {
-                    item.state(true);
-                });
-            } else {
-                ko.utils.arrayFirst(self.items(), function (item) {
-                    item.state(false);
-                });
+            if (self.totalItemsCompleted() === self.items().length){
+                if (value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                } else {
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(false);
+                    });
+                }
+            }else{
+                if (value){
+                    ko.utils.arrayFirst(self.items(), function (item) {
+                        item.state(true);
+                    });
+                }
             }
         }
 
@@ -175,7 +184,30 @@ var ViewModel = function() {
 
     self.allState = function(){
         self.todoState(0);
-        // self.checkAll(false);
+        if(self.totalItemsCompleted() === self.items().length){
+            self.checkAll(true);
+        }else{
+            self.checkAll(false);
+        }
+    }
+
+    self.test = function(){
+        if(self.todoState() === 0){
+            if(self.totalItemsActive() > 0){
+                self.checkAll(false);
+            }
+            if(self.totalItemsCompleted() === self.items().length){
+                self.checkAll(true);
+            }
+        }
+        if(self.todoState() === 2){
+            if(self.totalItemsCompleted() === self.items().length){
+                self.checkAll(true);
+            }else{
+                self.checkAll(false);
+            }
+        }
+        return true;
     }
 
     var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
@@ -187,10 +219,11 @@ var ViewModel = function() {
 // ko.mapping.fromJS(JSON.parse(localStorage.getItem("vM")), new ViewModel);
 // console.log(JSON.parse(localStorage.getItem("vM")))
 //
-console.log(new ViewModel())
+// console.log(new ViewModel())
 // ko.mapping.fromJS(localStorage.getItem("vM"), self);
-ko.mapping.fromJS(localStorage.getItem("vM"), null, ViewModel);
+// ko.mapping.fromJS(localStorage.getItem("vM"), null, ViewModel);
 ko.applyBindings(new ViewModel());
+ko.mapping.fromJS(localStorage.getItem("todolist"), ViewModel);
 
 // var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
 // console.log(viewModel)

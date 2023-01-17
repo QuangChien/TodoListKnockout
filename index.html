@@ -16,7 +16,7 @@
     <section class="main">
         <input class="new-todo" placeholder="What needs to be done?"
                data-bind="value: itemToAdd, valueUpdate: 'afterkeydown', event: { keyup : addItem }">
-        <div class="toggle-wrap">
+        <div class="toggle-wrap" data-bind="hidden: !items().length">
             <label class="toggle-all-label" name="toggle-all-label" for="toggle-all">
                 <svg data-bind="css: { 'opacity-1': checkAll }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="toggle-all-svg">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -29,7 +29,7 @@
 <!--        </div>-->
         <ul class="todo-list" data-bind="foreach: items">
             <li class="view" data-bind="hidden: ($parent.todoState() == 1 && state() == true) || ($parent.todoState() == 2 && state() == false)">
-                <input class="toggle" type="checkbox" data-bind="checked: state || $parent.checkAll()">
+                <input class="toggle" type="checkbox" data-bind="checked: state || $parent.checkAll(), click: $parent.test">
                 <div class="input-edit-wrap" data-bind="event: { dblclick: function(data, event){ $parent.editItemInput(data, event) } }">
                     <input class="edit active" data-bind="value: name, style: { 'text-decoration': state() ? 'line-through' : 'unset'}, event: { blur: $parent.disableEditInput, keyup: $parent.onEnter }, disable: inputDisable">
                 </div>
