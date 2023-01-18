@@ -29,7 +29,7 @@
 <!--        </div>-->
         <ul class="todo-list" data-bind="foreach: items">
             <li class="view" data-bind="hidden: ($parent.todoState() == 1 && state() == true) || ($parent.todoState() == 2 && state() == false)">
-                <input class="toggle" type="checkbox" data-bind="checked: state || $parent.checkAll(), click: $parent.test">
+                <input class="toggle" type="checkbox" data-bind="checked: state || $parent.checkAll(), click: $parent.checkedItem">
                 <div class="input-edit-wrap" data-bind="event: { dblclick: function(data, event){ $parent.editItemInput(data, event) } }">
                     <input class="edit active" data-bind="value: name, style: { 'text-decoration': state() ? 'line-through' : 'unset'}, event: { blur: $parent.disableEditInput, keyup: $parent.onEnter }, disable: inputDisable">
                 </div>

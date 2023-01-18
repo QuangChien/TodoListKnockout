@@ -13,7 +13,8 @@
 // var viewModel = ko.mapping.fromJS(localStorage.getItem("todolist"));
 
 
-var ViewModel = function() {
+var ViewModel = function(data) {
+    console.log(data)
     var self = this;
     var todoItems = [
         // new ToDoItem("Exercise one hour", false, true),
@@ -41,7 +42,7 @@ var ViewModel = function() {
             localStorage.setItem("todolist", JSON.stringify(unmapped));
             // localStorage.setItem('todolist', self.items());
             console.log(unmapped)
-            // console.log(sessionStorage.getItem("vM"));
+            console.log(localStorage.getItem("todolist"));
         }
     };
 
@@ -191,12 +192,17 @@ var ViewModel = function() {
         }
     }
 
-    self.test = function(){
+    self.checkedItem = function(){
         if(self.todoState() === 0){
             if(self.totalItemsActive() > 0){
                 self.checkAll(false);
             }
             if(self.totalItemsCompleted() === self.items().length){
+                self.checkAll(true);
+            }
+        }
+        if(self.todoState() === 1){
+            if(self.totalItemsActive() === 0){
                 self.checkAll(true);
             }
         }
@@ -210,8 +216,7 @@ var ViewModel = function() {
         return true;
     }
 
-    var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
-    console.log();
+    // var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
     // self.persistedArray = ko.observableArray().extend({ persist: 'todolist'});
 };
 
@@ -222,8 +227,10 @@ var ViewModel = function() {
 // console.log(new ViewModel())
 // ko.mapping.fromJS(localStorage.getItem("vM"), self);
 // ko.mapping.fromJS(localStorage.getItem("vM"), null, ViewModel);
-ko.applyBindings(new ViewModel());
-ko.mapping.fromJS(localStorage.getItem("todolist"), ViewModel);
+ko.applyBindings(new ViewModel(JSON.parse(localStorage.getItem("todolist"))));
+ko.mapping.fromJS(JSON.parse(localStorage.getItem("todolist")), ViewModel);
+
+// ko.mapping.fromJS(localStorage.getItem("todolist"), ViewModel);
 
 // var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
 // console.log(viewModel)
