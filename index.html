@@ -52,7 +52,7 @@
             <li class="selected to-do-completed" data-bind="click: completedState, css: { 'active': todoState() == 2 }">Completed</li>
         </ul>
         <div class="clear-completed-wraper">
-            <span class="clear-completed" data-bind="click: clearItemCompleted(), hidden: totalItemsCompleted() == 0">Clear completed</span>
+            <span class="clear-completed" data-bind="click: clearItemCompleted, hidden: totalItemsCompleted() == 0">Clear completed</span>
         </div>
     </footer>
 </div>

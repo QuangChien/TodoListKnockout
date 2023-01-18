@@ -1,35 +1,16 @@
-// var viewModel; viewModel = JSON.parse(localStorage.getItem("vM"));
-//
-// if(viewModel !== undefined || viewModel !== null) {
-//     viewModel = new vM();
-//     ko.applyBindings(viewModel);
-// }
-// ko.mapping.fromJS(JSON.parse(localStorage.getItem("vM")), self);
-// console.log(JSON.parse(localStorage.getItem("vM")))
-// view = ko.mapping.fromJS(localStorage.getItem("vM"));
-// console.log(localStorage.getItem("vM"))
-// ko.applyBindings(view);
-
-// var viewModel = ko.mapping.fromJS(localStorage.getItem("todolist"));
-
-
-var ViewModel = function(data) {
-    console.log(data)
+function ToDoItem(name, state = false, inputDisable = true) {
     var self = this;
-    var todoItems = [
-        // new ToDoItem("Exercise one hour", false, true),
-        // new ToDoItem("Supermarket", false, false)
-    ];
+    self.name = ko.observable(name);
+    self.state = ko.observable(state);
+    self.inputDisable = ko.observable(inputDisable);
+}
 
-    function ToDoItem(name, state, inputDisable) {
-        var self = this;
-        self.name = ko.observable(name);
-        self.state = ko.observable(false);
-        self.inputDisable = ko.observable(true);
-    }
-
+var ViewModel = function(todos) {
+    var self = this;
+    self.items = ko.observableArray(todos.map(function (todo) {
+        return new ToDoItem(todo.name, todo.state, todo.inputDisable);
+    }));
     self.checkAll = ko.observable(false);
-    self.items = ko.observableArray(todoItems);
     self.itemToAdd = ko.observable("");
     self.todoState = ko.observable(0);
     self.totalItemsActive = 0;
@@ -38,11 +19,6 @@ var ViewModel = function(data) {
         if (event.keyCode === 13 && self.itemToAdd() !== "") {
             self.items.push(new ToDoItem(self.itemToAdd()));
             self.itemToAdd("");
-            var unmapped = ko.mapping.toJS(self);
-            localStorage.setItem("todolist", JSON.stringify(unmapped));
-            // localStorage.setItem('todolist', self.items());
-            console.log(unmapped)
-            console.log(localStorage.getItem("todolist"));
         }
     };
 
@@ -216,27 +192,13 @@ var ViewModel = function(data) {
         return true;
     }
 
-    // var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
-    // self.persistedArray = ko.observableArray().extend({ persist: 'todolist'});
+    ko.computed(function () {
+        localStorage.setItem('todos', ko.toJSON(self.items));
+    }.bind(this)).extend({
+        rateLimit: { timeout: 100, method: 'notifyWhenChangesStop' }
+    });
 };
 
+var todos = ko.utils.parseJson(localStorage.getItem('todos'));
 
-// ko.mapping.fromJS(JSON.parse(localStorage.getItem("vM")), new ViewModel);
-// console.log(JSON.parse(localStorage.getItem("vM")))
-//
-// console.log(new ViewModel())
-// ko.mapping.fromJS(localStorage.getItem("vM"), self);
-// ko.mapping.fromJS(localStorage.getItem("vM"), null, ViewModel);
-ko.applyBindings(new ViewModel(JSON.parse(localStorage.getItem("todolist"))));
-ko.mapping.fromJS(JSON.parse(localStorage.getItem("todolist")), ViewModel);
-
-// ko.mapping.fromJS(localStorage.getItem("todolist"), ViewModel);
-
-// var viewModel = ko.mapping.fromJS(localStorage.getItem("vM"));
-// console.log(viewModel)
-
-
-// ko.mapping.fromJS(data, viewModel);
-// var unmapped = ko.mapping.toJS(ViewModel);
-// localStorage.setItem('todolist', unmapped);
-// ko.mapping.fromJS(localStorage.getItem('todolist'), ViewModel);
+ko.applyBindings(new ViewModel(todos || []));
